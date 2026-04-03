@@ -4,6 +4,7 @@ module Solana
   class Transaction
     SYSTEM_PROGRAM_ID = "\x00" * 32
     TOKEN_PROGRAM_ID = Keypair.decode_base58("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    ASSOCIATED_TOKEN_PROGRAM_ID = Keypair.decode_base58("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
     SYSVAR_RENT_PUBKEY = Keypair.decode_base58("SysvarRent111111111111111111111111111111111")
 
     attr_reader :instructions, :signers
