@@ -22,7 +22,15 @@ Generic Solana primitives for Ruby. Extracted from Turf Monster's `app/services/
 - **Turf Monster** — keeps `Solana::Config`, `Solana::Vault`, `Solana::Reconciler`, `Solana::AuthVerifier`
 - **McRitchie Studio** — can use for future Solana features
 
+## Testing
+
+- `ruby -Itest test/keypair_test.rb test/borsh_test.rb test/transaction_test.rb` — 9 tests
+- **Keypair**: generate, base58 roundtrip, from_bytes, from_json_file, sign, address alias
+- **Borsh**: encode/decode roundtrips for u8, u16, u32, u64, string, bool, pubkey, vec, bytes32
+- **Transaction**: anchor discriminator (determinism, uniqueness), PDA derivation (determinism, not on curve), on_curve? check, serialization, error cases
+
 ## Repo
 
 - GitHub: https://github.com/amcritchie/solana_studio
 - Install: `gem "solana_studio", git: "https://github.com/amcritchie/solana_studio.git"`
+- Version: 0.2.0
