@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0 (2026-04-03)
+
+- SPL Token instruction builders (`create_associated_token_account`, `mint_to`, `transfer`)
+- Test suite: Keypair, Borsh, and Transaction tests (9 tests)
+- Updated CLAUDE.md with test documentation
+
 ## v0.1.0 (2026-04-02)
 
 - Initial release
