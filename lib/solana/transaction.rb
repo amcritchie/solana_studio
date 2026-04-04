@@ -97,6 +97,46 @@ module Solana
       Base64.strict_encode64(serialize)
     end
 
+    # Serialize with partial signing — signs with available signers, leaves
+    # zero-byte placeholders for additional_signers that must sign client-side.
+    # additional_signers: array of pubkey bytes (32-byte strings) that will sign later.
+    def serialize_partial(additional_signers: [])
+      raise "No blockhash set" unless @recent_blockhash
+      raise "No signers" if @signers.empty?
+      raise "No instructions" if @instructions.empty?
+
+      # Mark additional signers so they appear in the account keys
+      additional_signers.each do |pubkey_bytes|
+        pk = normalize_pubkey(pubkey_bytes)
+        @_additional_signers ||= []
+        @_additional_signers << pk
+      end
+
+      account_keys = collect_account_keys
+      num_required_signatures = count_required_signatures(account_keys)
+      num_readonly_signed = count_readonly_signed(account_keys)
+      num_readonly_unsigned = count_readonly_unsigned(account_keys)
+
+      message = build_message(account_keys, num_required_signatures, num_readonly_signed, num_readonly_unsigned)
+
+      # Build ordered signature slots matching the account key order
+      signer_map = {}
+      @signers.each { |s| signer_map[s.public_key_bytes] = s.sign(message) }
+
+      signatures = account_keys.select { |_, meta| meta[:is_signer] }.map do |pk, _|
+        signer_map[pk] || ("\x00" * 64).b  # zero placeholder for unsigned slots
+      end
+
+      compact_u16(signatures.length) + signatures.join.b + message
+    ensure
+      @_additional_signers = nil
+    end
+
+    def serialize_partial_base64(additional_signers: [])
+      require "base64"
+      Base64.strict_encode64(serialize_partial(additional_signers: additional_signers))
+    end
+
     private
 
     def normalize_pubkey(key)
@@ -123,6 +163,14 @@ module Solana
         pk = signer.public_key_bytes
         keys[pk] ||= { is_signer: true, is_writable: false }
         keys[pk][:is_signer] = true
+      end
+
+      # Additional signers (for partial signing — not in @signers but must be marked as signer)
+      if @_additional_signers
+        @_additional_signers.each do |pk|
+          keys[pk] ||= { is_signer: true, is_writable: false }
+          keys[pk][:is_signer] = true
+        end
       end
 
       # Instruction accounts
