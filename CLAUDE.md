@@ -9,6 +9,44 @@ Generic Solana primitives for Ruby. Extracted from Turf Monster's `app/services/
 - `Solana::Borsh` — Borsh binary serialization (little-endian)
 - `Solana::Transaction` — Transaction builder, PDA derivation, Anchor discriminators
 
+## API Reference
+
+### Solana::Keypair
+- `Keypair.generate` — new random Ed25519 keypair
+- `Keypair.from_base58(secret_key_base58)` — load from env var
+- `Keypair.from_bytes(byte_array)` — load from raw bytes
+- `Keypair.from_json_file(path)` — load from Solana CLI JSON file
+- `keypair.public_key` — 32-byte public key
+- `keypair.address` — base58 public key string
+- `keypair.sign(message)` — Ed25519 signature (64 bytes)
+
+### Solana::Client
+- `Client.new(rpc_url)` — connect to RPC (defaults to `SOLANA_RPC_URL` env or devnet)
+- `client.send_rpc(method, params)` — raw JSON-RPC call with retry
+- `client.get_balance(pubkey)` — SOL balance in lamports
+- `client.get_token_account_balance(ata)` — SPL token balance
+- `client.send_transaction(tx_base64)` — submit signed transaction
+- `client.get_latest_blockhash` — recent blockhash for transactions
+- Retries on rate limit (429) and expired blockhash errors
+
+### Solana::Borsh
+- `Borsh.encode_u8/u16/u32/u64(value)` — little-endian integers
+- `Borsh.encode_string(str)` — length-prefixed UTF-8
+- `Borsh.encode_pubkey(base58)` — 32-byte public key
+- `Borsh.encode_bool(val)` — single byte
+- `Borsh.encode_vec(items, type)` — length-prefixed array
+- `Borsh.decode_*` — corresponding decode methods
+
+### Solana::Transaction
+- `Transaction.new` — builder pattern
+- `tx.add_instruction(program_id, accounts, data)` — append instruction
+- `tx.sign(keypairs, blockhash)` — sign with one or more keypairs
+- `tx.serialize` — base64-encoded wire format
+- `tx.serialize_partial` — for multi-signer partial signing
+- `Transaction.find_pda(program_id, seeds)` — PDA derivation
+- `Transaction.anchor_discriminator(name)` — SHA256-based 8-byte discriminator
+- `Transaction.on_curve?(pubkey)` — check if pubkey is on Ed25519 curve
+
 ## Design Decisions
 
 - **No Rails dependency** — pure Ruby + ed25519 gem only

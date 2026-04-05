@@ -80,6 +80,10 @@ pda, bump = Solana::Transaction.find_pda(
 - `ed25519` (~> 1.3) — Ed25519 signing
 - Ruby stdlib only (net/http, json, digest, securerandom)
 
+## Development Notes
+
+See [CLAUDE.md](./CLAUDE.md) for detailed development context including the full API reference, design decisions, and AI agent instructions.
+
 ## License
 
 MIT
