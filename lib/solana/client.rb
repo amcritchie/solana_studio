@@ -23,8 +23,10 @@ module Solana
       @request_id = 0
     end
 
-    def get_account_info(pubkey, encoding: "base64")
-      call("getAccountInfo", [pubkey, { encoding: encoding }])
+    def get_account_info(pubkey, encoding: "base64", commitment: nil)
+      config = { encoding: encoding }
+      config[:commitment] = commitment if commitment
+      call("getAccountInfo", [pubkey, config])
     end
 
     def get_token_account_balance(pubkey)
