@@ -79,6 +79,10 @@ module Solana
       call("getBalance", [pubkey])
     end
 
+    def get_transaction(signature, commitment: "confirmed")
+      call("getTransaction", [signature, { encoding: "json", commitment: commitment }])
+    end
+
     def get_token_accounts_by_owner(owner_pubkey)
       call("getTokenAccountsByOwner", [
         owner_pubkey,
